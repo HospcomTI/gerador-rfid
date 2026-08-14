@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor RFID</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 640px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.5;
+      }
+      h1 {
+        text-align: center;
+      }
+      section {
+        margin: 1.5rem 0;
+      }
+      section h2 {
+        margin: 0 0 0.25rem;
+      }
+      section p {
+        margin: 0 0 1rem;
+        color: #555;
+      }
+      button {
+        width: 100%;
+        padding: 1.25rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+      }
+      button.btn-base {
+        background: #2563eb;
+      }
+      button.btn-base:hover:not(:disabled) {
+        background: #1d4ed8;
+      }
+      button.btn-etiquetas {
+        background: #7c3aed;
+      }
+      button.btn-etiquetas:hover:not(:disabled) {
+        background: #6d28d9;
+      }
+      button.btn-imprimir {
+        background: #16a34a;
+      }
+      button.btn-imprimir:hover:not(:disabled) {
+        background: #15803d;
+      }
+      button:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #ddd;
+        margin: 2rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Conversor RFID</h1>
+
+    <section>
+      <h2>Atualizar Base</h2>
+      <p>Le o arquivo XLSX (2 abas, apenas linhas visiveis) e grava os dados no banco SQLite.</p>
+      <form action="/atualizar-base" method="POST">
+        <button type="submit" class="btn-base">ATUALIZAR BASE</button>
+      </form>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Gerar Arquivo WorldTech - Comissionador</h2>
+      <p>Arquivo utilizado para gerar etiquetas RFID</p>
+      <form action="/gerar-arquivo-comissionador" method="POST">
+        <button type="submit" class="btn-etiquetas">GERAR ARQUIVO COMISSIONADOR</button>
+      </form>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Imprimir Etiquetas Série</h2>
+      <p>Gera e envia as etiquetas RFID para impressao a partir dos dados da base.</p>
+      <form action="/imprimir-etiquetas?tipo=1" method="POST">
+        <button type="submit" class="btn-imprimir">IMPRIMIR ETIQUETAS SÉRIE</button>
+      </form>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Imprimir Etiquetas Lote</h2>
+      <p>Gera e envia as etiquetas RFID para impressao a partir dos dados da base.</p>
+      <form action="/imprimir-etiquetas?tipo=2" method="POST">
+        <button type="submit" class="btn-imprimir">IMPRIMIR ETIQUETAS LOTE</button>
+      </form>
+    </section>
+
+    <script type="module">
+      const botoes = document.querySelectorAll("form button");
+      for (const form of document.querySelectorAll("form")) {
+        form.addEventListener("submit", () => {
+          for (const b of botoes) b.disabled = true;
+        });
+      }
+    </script>
+  </body>
+</html>
