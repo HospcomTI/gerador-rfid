@@ -128,7 +128,7 @@ export async function gerarArquivoComissionador(): Promise<void> {
       : mapaLote.get(`${i.itemCode}${SEPARATOR}${i.loteCode}`);
 
     return [
-      mapaItem.get(i.itemCode),
+      mapaItem.get(String(i.itemCode)),
       i.itemCode,
       i.tipo,
       deLoteCode,

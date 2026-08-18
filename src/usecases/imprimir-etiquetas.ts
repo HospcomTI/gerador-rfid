@@ -140,7 +140,7 @@ console.log('selecionadas', selecionadas)
 
     const TIPO = i.tipo;
 
-    const COD_ITEM = String(mapaItem.get(i.itemCode));
+    const COD_ITEM = String(mapaItem.get(String(i.itemCode)));
 
     const COD_LOTE = serie
       ? undefined
