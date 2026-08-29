@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
 import { config } from "../config";
-import { MODEL_LOTE, MODEL_SERIE, SEPARATOR } from "../constants";
+import { MODEL_LOTE, MODEL_LOTE_305, MODEL_SERIE, MODEL_SERIE_305, SEPARATOR } from "../constants";
 import { db } from "../db";
 import { TipoComissionador, TipoMap } from "../enum";
 import type { ItemBase } from "./atualizar-base";
@@ -249,9 +249,9 @@ async function enviarParaImpressora(
   etiquetas: Record<string, unknown>[],
   tipo: TipoComissionador,
 ): Promise<void> {
-  if (config.impressoraTipo.toUpperCase() !== "ZEBRA") {
-    throw new Error(`Impressora nao suportada: ${config.impressoraTipo}`);
-  }
+  // if (config.impressoraTipo.toUpperCase() !== "ZEBRA") {
+  //   throw new Error(`Impressora nao suportada: ${config.impressoraTipo}`);
+  // }
   if (etiquetas.length === 0) {
     return;
   }
@@ -268,7 +268,12 @@ async function enviarParaImpressora(
   const comFakes = [fake, fake, ...etiquetas];
 
   // escolhe o modelo ZPL e preenche os placeholders @CAMPO@ de cada etiqueta
-  const model = tipo === TipoComissionador.SERIE ? MODEL_SERIE : MODEL_LOTE;
+  const model = (() => {
+    if (config.dpi === '305') {
+      return tipo === TipoComissionador.SERIE ? MODEL_SERIE_305 : MODEL_LOTE_305;
+    }
+    return tipo === TipoComissionador.SERIE ? MODEL_SERIE : MODEL_LOTE;
+  })()
   const zpl = comFakes
     .map((e) => model.replace(/@(\w+)@/g, (_, k) => String(e[k] ?? "")))
     .join("");

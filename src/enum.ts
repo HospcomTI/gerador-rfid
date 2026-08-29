@@ -10,3 +10,9 @@ export enum TipoComissionador {
   SERIE = 1,
   LOTE = 2,
 }
+
+// IMPRESSORA_TIPO do .env -> define a linguagem de etiqueta enviada na 9100
+export enum Impressora {
+  ZEBRA = "ZEBRA", // ZPL
+  SATO = "SATO", // SBPL
+}

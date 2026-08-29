@@ -23,4 +23,5 @@ export const config = {
   sqlitePath: required("SQLITE_PATH"),
   impressoraTipo: required("IMPRESSORA_TIPO"),
   impressoraIp: required("IMPRESSORA_IP"),
+  dpi: required("DPI"),
 } as const;
