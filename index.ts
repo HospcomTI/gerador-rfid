@@ -1,4 +1,5 @@
 import { imprimirEtiquetas } from "./src/usecases/imprimir-etiquetas";
+import { imprimirEnderecos } from "./src/usecases/imprimir-endereco";
 import { gerarArquivoComissionador } from "./src/usecases/gerar-arquivo-comissionador";
 import { atualizarBase } from "./src/usecases/atualizar-base";
 import { TipoComissionador } from "./src/enum";
@@ -30,6 +31,13 @@ const server = Bun.serve({
           });
         }
         await imprimirEtiquetas(tipo);
+        return Response.redirect("/", 303);
+      },
+    },
+
+    "/imprimir-enderecos": {
+      POST: async () => {
+        await imprimirEnderecos();
         return Response.redirect("/", 303);
       },
     },

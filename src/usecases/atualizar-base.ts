@@ -99,9 +99,7 @@ export async function atualizaLote(itens: ItemBase[]): Promise<void> {
 
 // Mapeia em massa os itens no tb_map.
 export async function atualizaItem(itens: ItemBase[]): Promise<void> {
-  const nomes = itens
-    .filter((i) => !!i.itemCode)
-    .map((i) => `${i.itemCode}`);
+  const nomes = itens.filter((i) => !!i.itemCode).map((i) => `${i.itemCode}`);
 
   await mapearEmMassa(TipoMap.ITEM, nomes, "dados/tb_item_map.csv");
 }
@@ -113,6 +111,13 @@ export async function atualizaSerie(itens: ItemBase[]): Promise<void> {
     .map((i) => `${i.itemCode}${SEPARATOR}${i.serieCode}`);
 
   await mapearEmMassa(TipoMap.SERIE, nomes, "dados/tb_serie_map.csv");
+}
+// Mapeia em massa os enderecos (posicao no deposito) no tb_map.
+// Cada bincode distinto ganha o sequencial que vai no EPC da etiqueta.
+export async function atualizaEndereco(bincodes: string[]): Promise<void> {
+  const nomes = bincodes.filter((b) => !!b);
+
+  await mapearEmMassa(TipoMap.ENDERECO, nomes, "dados/tb_endereco_map.csv");
 }
 
 // Usecase: atualizar a base a partir do XLSX.
@@ -170,6 +175,14 @@ export async function atualizarBase(): Promise<void> {
     }))
     .filter((l) => !!l.serieCode || !!l.loteCode) as ItemBase[];
 
+  // aba 1: B=1 (Posicao no deposito). Fica fora do `base` porque o endereco
+  // existe mesmo em linha sem serie/lote.
+  const enderecos = linhas1
+    .slice(1)
+    .map((linha) => String(linha[1] ?? "").trim())
+    .filter((b) => !!b);
+
+  await atualizaEndereco(enderecos);
   await atualizaItem(base);
   await atualizaSerie(base);
   await atualizaLote(base);

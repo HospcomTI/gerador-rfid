@@ -3,12 +3,14 @@ export enum TipoMap {
   ITEM = "item",
   SERIE = "serie",
   LOTE = "lote",
+  ENDERECO = "endereco",
 }
 
 // coluna TIPO do arquivo comissionador
 export enum TipoComissionador {
   SERIE = 1,
   LOTE = 2,
+  ENDERECO = 5,
 }
 
 // IMPRESSORA_TIPO do .env -> define a linguagem de etiqueta enviada na 9100

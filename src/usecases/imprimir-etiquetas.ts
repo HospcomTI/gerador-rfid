@@ -1,17 +1,17 @@
 import * as XLSX from "xlsx";
 import { config } from "../config";
-import { MODEL_LOTE, MODEL_LOTE_305, MODEL_SERIE, MODEL_SERIE_305, SEPARATOR } from "../constants";
+import { SEPARATOR } from "../constants";
 import { db } from "../db";
 import { TipoComissionador, TipoMap } from "../enum";
+import { enviarParaImpressora } from "../impressora";
 import type { ItemBase } from "./atualizar-base";
 
 // carrega o mapa name -> code de uma org+type
 function carregarMapa(org: number, type: string): Map<string, number> {
   const rows = db
-    .query<
-      { name: string; code: number },
-      [number, string]
-    >("SELECT name, code FROM tb_map WHERE org = ? AND type = ?")
+    .query<{ name: string; code: number }, [number, string]>(
+      "SELECT name, code FROM tb_map WHERE org = ? AND type = ?",
+    )
     .all(org, type);
   return new Map(rows.map((r) => [r.name, r.code]));
 }
@@ -69,7 +69,7 @@ export async function imprimirEtiquetas(
   for (const linha of linhas2.slice(1)) {
     validadePorChave.set(chave(linha[0], linha[14]), linha[15]);
   }
-console.log('selecionadas', selecionadas)
+  console.log("selecionadas", selecionadas);
   // junta aba 1 com validade da aba 2
   // aba 1: C=2 (Nº item), D=3 (Descricao), E=4 (Nº serie),
   //        H=7 (Nº lote), I=8 (Quantidade)
@@ -88,7 +88,7 @@ console.log('selecionadas', selecionadas)
         tipo = TipoComissionador.SERIE;
       }
 
-      let validade = validadePorChave.get(chave(linha[2], linha[7]))
+      let validade = validadePorChave.get(chave(linha[2], linha[7]));
 
       // pode vir como serial do Excel (ex: "43985" = dias desde 30/12/1899)
       if (validade && /^\d+(\.\d+)?$/.test(String(validade).trim())) {
@@ -162,7 +162,7 @@ console.log('selecionadas', selecionadas)
       SERIE: serie ? i.serieCode : undefined,
       QTD: i.quantidade,
       DESCRICAO: i.descricao,
-      VALIDADE: serie ? '' : (i.validade ?? ''),
+      VALIDADE: serie ? "" : (i.validade ?? ""),
       RFID_PREFIX: `${config.orgName.padStart(4, "0")}${COD_ITEM.padStart(6, "0")}${TIPO}${SERIE_LOTE.padStart(5, "0")}000`,
     };
   });
@@ -242,55 +242,4 @@ console.log('selecionadas', selecionadas)
 // escapa valor para CSV (aspas se tiver virgula/aspas/quebra de linha)
 function csvCell(v: string): string {
   return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
-}
-
-// Envia as etiquetas (termica + RFID) para a impressora Zebra via ZPL (TCP 9100).
-async function enviarParaImpressora(
-  etiquetas: Record<string, unknown>[],
-  tipo: TipoComissionador,
-): Promise<void> {
-  // if (config.impressoraTipo.toUpperCase() !== "ZEBRA") {
-  //   throw new Error(`Impressora nao suportada: ${config.impressoraTipo}`);
-  // }
-  if (etiquetas.length === 0) {
-    return;
-  }
-
-  // as 2 primeiras impressoes sempre falham -> 2 etiquetas fake sacrificiais no topo
-  const fake: Record<string, unknown> = {
-    EPC: "1".repeat(24),
-    DESCRICAO: "_DESCARTAR_",
-    CODIGO: "_DESCARTAR_",
-    SERIE: "_DESCARTAR_",
-    LOTE: "_DESCARTAR_",
-    VALIDADE: "_DESCARTAR_",
-  };
-  const comFakes = [fake, fake, ...etiquetas];
-
-  // escolhe o modelo ZPL e preenche os placeholders @CAMPO@ de cada etiqueta
-  const model = (() => {
-    if (config.dpi === '305') {
-      return tipo === TipoComissionador.SERIE ? MODEL_SERIE_305 : MODEL_LOTE_305;
-    }
-    return tipo === TipoComissionador.SERIE ? MODEL_SERIE : MODEL_LOTE;
-  })()
-  const zpl = comFakes
-    .map((e) => model.replace(/@(\w+)@/g, (_, k) => String(e[k] ?? "")))
-    .join("");
-
-  // Zebra ZD621R: ZPL cru na porta 9100
-  const socket = await Bun.connect({
-    hostname: config.impressoraIp,
-    port: 9100,
-    socket: {
-      data() {},
-      error(_s, err) {
-        console.error("erro impressora:", err);
-      },
-    },
-  });
-
-  socket.write(zpl);
-  socket.flush();
-  socket.end();
 }
