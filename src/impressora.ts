@@ -31,7 +31,8 @@ export async function enviarParaImpressora(
     VALIDADE: "_DESCARTAR_",
     BINCODE: "_DESCARTAR_",
   };
-  const comFakes = [fake, fake, ...etiquetas];
+  // const comFakes = [fake, fake, ...etiquetas];
+  const comFakes = [...etiquetas];
 
   // escolhe o modelo ZPL e preenche os placeholders @CAMPO@ de cada etiqueta
   const model = (() => {
