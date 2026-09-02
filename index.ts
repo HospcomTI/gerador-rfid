@@ -6,23 +6,25 @@ import { TipoComissionador } from "./src/enum";
 import { db } from "./src/db";
 import { runMigrations } from "./src/migrations/runner";
 import index from "./src/views/index.html";
+import { imprimirEtiquetasApi } from "./src/usecases/imprimir-etiquetas-api";
+import { imprimirEnderecosApi } from "./src/usecases/imprimir-endereco-api";
 
 // roda migrations pendentes no boot
 await runMigrations(db);
 
 const server = Bun.serve({
-  port: 3000,
+  port: 8080,
   routes: {
     "/": index,
 
-    "/atualizar-base": {
-      POST: async () => {
-        await atualizarBase();
-        return Response.redirect("/", 303);
-      },
-    },
+    // "/atualizar-base": {
+    //   POST: async () => {
+    //     await atualizarBase();
+    //     return Response.redirect("/", 303);
+    //   },
+    // },
 
-    "/imprimir-etiquetas": {
+    "/imprimir-etiquetas-api": {
       POST: async (req) => {
         const tipo = Number(new URL(req.url).searchParams.get("tipo"));
         if (tipo !== TipoComissionador.SERIE && tipo !== TipoComissionador.LOTE) {
@@ -30,24 +32,44 @@ const server = Bun.serve({
             status: 400,
           });
         }
-        await imprimirEtiquetas(tipo);
+        await imprimirEtiquetasApi(tipo);
         return Response.redirect("/", 303);
       },
     },
 
-    "/imprimir-enderecos": {
+    "/imprimir-enderecos-api": {
       POST: async () => {
-        await imprimirEnderecos();
+        await imprimirEnderecosApi();
         return Response.redirect("/", 303);
       },
     },
 
-    "/gerar-arquivo-comissionador": {
-      POST: async () => {
-        await gerarArquivoComissionador();
-        return Response.redirect("/", 303);
-      },
-    },
+    // "/imprimir-etiquetas": {
+    //   POST: async (req) => {
+    //     const tipo = Number(new URL(req.url).searchParams.get("tipo"));
+    //     if (tipo !== TipoComissionador.SERIE && tipo !== TipoComissionador.LOTE) {
+    //       return new Response("tipo invalido (use ?tipo=1 ou ?tipo=2)", {
+    //         status: 400,
+    //       });
+    //     }
+    //     await imprimirEtiquetas(tipo);
+    //     return Response.redirect("/", 303);
+    //   },
+    // },
+
+    // "/imprimir-enderecos": {
+    //   POST: async () => {
+    //     await imprimirEnderecos();
+    //     return Response.redirect("/", 303);
+    //   },
+    // },
+
+    // "/gerar-arquivo-comissionador": {
+    //   POST: async () => {
+    //     await gerarArquivoComissionador();
+    //     return Response.redirect("/", 303);
+    //   },
+    // },
   },
 });
 

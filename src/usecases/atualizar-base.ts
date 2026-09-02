@@ -10,7 +10,7 @@ export type ItemBase = {
   descricao: string;
   serieCode: string;
   loteCode: string;
-  quantidade: string;
+  quantidade: number;
   validade: string;
 };
 
