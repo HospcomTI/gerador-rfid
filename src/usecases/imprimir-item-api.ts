@@ -66,7 +66,7 @@ export async function imprimirItemApi(): Promise<void> {
           tipo,
           binCode: '',
           itemCode,
-          descricao: '',
+          descricao: String(linha[3] || '').trim(),
           serieCode: '',
           loteCode: '',
           quantidade: 1,
