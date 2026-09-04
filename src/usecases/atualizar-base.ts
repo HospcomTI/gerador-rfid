@@ -6,6 +6,7 @@ import { db } from "../db";
 
 // item da base ja com a validade da aba 2 juntada
 export type ItemBase = {
+  binCode?: string;
   itemCode: string;
   descricao: string;
   serieCode: string;

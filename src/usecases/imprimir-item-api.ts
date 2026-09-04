@@ -48,35 +48,34 @@ export async function imprimirItemApi(): Promise<void> {
 
   // le como matriz de linhas; primeira linha e cabecalho
   const linhas1 = XLSX.utils.sheet_to_json<unknown[]>(ws1, { header: 1 });
-  const linhas2 = XLSX.utils.sheet_to_json<unknown[]>(ws2, { header: 1 });
 
   // filtra linhas de dados onde coluna A (indice 0) representa SIM
   const selecionadas = linhas1.slice(1).filter((linha) => isSim(linha[0]));
 
-  // indexa aba 2 por (Cod.Item A + N°Lote O) -> Validade (P)
-  // A=0, O=14, P=15
-  const validadePorChave = new Map<string, unknown>();
-  for (const linha of linhas2.slice(1)) {
-    validadePorChave.set(chave(linha[0], linha[14]), linha[15]);
-  }
   console.debug("selecionadas", selecionadas);
   // junta aba 1 com validade da aba 2
   // aba 1: C=2 (Nº item), D=3 (Descricao), E=4 (Nº serie),
   //        H=7 (Nº lote), I=8 (Quantidade)
-  const base = selecionadas
-    .map((linha) => {
-      return {
-        tipo,
-        binCode: '',
-        itemCode: String(linha[2] || '').trim(),
-        descricao: '',
-        serieCode: '',
-        loteCode: '',
-        quantidade: 1,
-        validade: '',
-      };
-    })
-    .filter((l) => l.tipo === tipo) as (ItemBase & { tipo: number })[];
+  const base = Array.from(
+  selecionadas
+    .reduce((acc, linha) => {
+        const itemCode = String(linha[2] || '').trim();
+        if (!itemCode || acc.has(itemCode)) return acc;
+
+        acc.set(itemCode, {
+          tipo,
+          binCode: '',
+          itemCode,
+          descricao: '',
+          serieCode: '',
+          loteCode: '',
+          quantidade: 1,
+          validade: '',
+        });
+        return acc;
+      }, new Map<string, ItemBase & { tipo: number }>())
+      .values(),
+    );
 
     if (!base.length) {
       return;
