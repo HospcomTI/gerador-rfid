@@ -8,6 +8,7 @@ import { runMigrations } from "./src/migrations/runner";
 import index from "./src/views/index.html";
 import { imprimirEtiquetasApi } from "./src/usecases/imprimir-etiquetas-api";
 import { imprimirEnderecosApi } from "./src/usecases/imprimir-endereco-api";
+import { imprimirItemApi } from "./src/usecases/imprimir-item-api";
 
 // roda migrations pendentes no boot
 await runMigrations(db);
@@ -40,6 +41,13 @@ const server = Bun.serve({
     "/imprimir-enderecos-api": {
       POST: async () => {
         await imprimirEnderecosApi();
+        return Response.redirect("/", 303);
+      },
+    },
+
+    "/imprimir-item-api": {
+      POST: async () => {
+        await imprimirItemApi();
         return Response.redirect("/", 303);
       },
     },

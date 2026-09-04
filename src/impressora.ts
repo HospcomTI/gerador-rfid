@@ -2,6 +2,8 @@ import { config } from "./config";
 import {
   MODEL_ENDERECO,
   MODEL_ENDERECO_305,
+  MODEL_ITEM,
+  MODEL_ITEM_305,
   MODEL_LOTE,
   MODEL_LOTE_305,
   MODEL_SERIE,
@@ -44,6 +46,8 @@ export async function enviarParaImpressora(
         return d305 ? MODEL_LOTE_305 : MODEL_LOTE;
       case TipoComissionador.ENDERECO:
         return d305 ? MODEL_ENDERECO_305 : MODEL_ENDERECO;
+      case TipoComissionador.ITEM:
+        return d305 ? MODEL_ITEM_305 : MODEL_ITEM;
     }
   })();
   const zpl = comFakes

@@ -115,6 +115,16 @@
       </form>
     </section>
 
+    <hr>
+
+    <section>
+      <h2>Imprimir Etiquetas Produto</h2>
+      <p>Uma etiqueta por código do produto (coluna C) das linhas marcadas.</p>
+      <form action="/imprimir-item-api" method="POST">
+        <button type="submit" class="btn-imprimir">IMPRIMIR ETIQUETAS PRODUTO (não é o Lote/Série)</button>
+      </form>
+    </section>
+
     <script type="module">
       const botoes = document.querySelectorAll("form button");
       for (const form of document.querySelectorAll("form")) {

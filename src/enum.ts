@@ -10,6 +10,7 @@ export enum TipoMap {
 export enum TipoComissionador {
   SERIE = 1,
   LOTE = 2,
+  ITEM = 4,
   ENDERECO = 5,
 }
 

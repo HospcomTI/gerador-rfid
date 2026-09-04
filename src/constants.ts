@@ -94,6 +94,34 @@ export const MODEL_ENDERECO_305 = `
 ^XZ
 `;
 
+
+
+// Etiqueta de endereco (posicao no deposito).
+// So o QR e o bincode em texto grande logo abaixo dele; o EPC nao sai
+// impresso, vai apenas dentro do QR e gravado na tag.
+// @see https://labelary.com/viewer.html
+export const MODEL_ITEM = `
+^XA
+^BY2
+^FO10,25^BQN,2,5^FD000@EPC@^FS
+
+^FO10,155^A0N,14,14^FDCOD. ITEM:^FS
+^FO10,175^A0N,40,40^FB410,2,0,L^FD@CODIGO@^FS
+^RFW,H^FD@EPC@^FS
+^XZ
+`;
+
+export const MODEL_ITEM_305 = `
+^XA
+^BY3
+^FO15,38^BQN,2,8^FD000@EPC@^FS
+
+^FO15,233^A0N,21,21^FDCOD. ITEM:^FS
+^FO15,263^A0N,60,60^FB615,2,0,L^FD@CODIGO@^FS
+^RFW,H^FD@EPC@^FS
+^XZ
+`;
+
 // Segmentos fixos do EPC de endereco (24 digitos no total):
 // ORG(4) + COD_ITEM(6) + TIPO(1) + SEQUENCIAL(5) + "000"(3) + CODE(5)
 // So o sequencial varia; o resto e constante para toda etiqueta de endereco.
